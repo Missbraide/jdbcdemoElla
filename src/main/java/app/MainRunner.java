@@ -1,6 +1,5 @@
 package app;
 
-import app.queries.QueriesAndStatements;
 
 import java.sql.*;
 import java.util.Locale;
@@ -13,15 +12,14 @@ public class MainRunner {
 
     public static void main(String[] args) {
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             Statement s = conn.createStatement();
-             PreparedStatement ps = conn.prepareStatement(QueriesAndStatements.DeleteEmployeeById.getQuery());
-             ResultSet rs = s.executeQuery(QueriesAndStatements.GetAllEmployees.getQuery());
-        ) {
-            //s.executeUpdate("insert into employees (name,salary) values('test',123.0)");
 
-            ps.setInt(1,5);
-            int rows = ps.executeUpdate();
+        DatabaseConnection db = new DatabaseConnection();
+
+        db.connect();
+
+        try {
+            db.ps = db.conn.prepareStatement(EmployeeDAO.SQL.GetAllEmployees.getQuery());
+            db.rs = db.ps.executeQuery();
 
             System.out.printf("%-4s %-20s %-10s%n",
                     "ID",
@@ -30,11 +28,11 @@ public class MainRunner {
 
             );
             System.out.println("----------------------------------");
-            while (rs.next()) {
+            while (db.rs.next()) {
                 System.out.printf("%-4d %-20s %-10.2f",
-                        rs.getInt(1),
-                        rs.getString(2).trim().toUpperCase(Locale.US),
-                        rs.getDouble(3)
+                        db.rs.getInt(1),
+                        db.rs.getString(2).trim().toUpperCase(Locale.US),
+                        db.rs.getDouble(3)
 
                 );
                 System.out.println();
@@ -44,8 +42,10 @@ public class MainRunner {
             e.printStackTrace();
         }
 
+        db.dispose();
 
-
+        EmployeeService es = new EmployeeService();
+        System.out.println(es.GetAllEmployees());
 
     }
 }
