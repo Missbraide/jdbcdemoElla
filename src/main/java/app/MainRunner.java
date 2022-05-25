@@ -8,7 +8,7 @@ import java.util.Locale;
 public class MainRunner {
     static final String DB_URL = "jdbc:mariadb://localhost:3306/jdbcdemo";
     static final String USER = "root";
-    static final String PASS = "root";
+    static final String PASS = "23091964";
     static final String QUERY = "select * from employees";
 
     public static void main(String[] args) {
